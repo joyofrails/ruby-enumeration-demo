@@ -3,29 +3,62 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-const ArrayEvaluationDemo = () => {
+type EvaluationType = 'eager' | 'lazy';
+
+interface Dot {
+  pos: number;
+  column: number;
+}
+
+interface Position extends Dot {
+  transformed: boolean;
+  exploded: boolean;
+  skipped: boolean;
+}
+
+interface Step {
+  pos: number;
+  from: number;
+  to: number;
+  progress: number;
+  narration: string;
+  explode?: boolean;
+  skipRemaining?: boolean;
+  untaken?: boolean;
+}
+
+interface ExplosionParticle {
+  id: string;
+  x: number;
+  y: number;
+  angle: number;
+  progress: number;
+  startTime: number;
+}
+
+const ArrayEvaluationDemo: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [type, setType] = useState('eager');
-  const [explosions, setExplosions] = useState([]);
-  const [positions, setPositions] = useState([]);
-  const processedStepsRef = useRef(new Set());
-  const animationRef = useRef(null);
+  const [type, setType] = useState<EvaluationType>('eager');
+  const [explosions, setExplosions] = useState<ExplosionParticle[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
+  const processedStepsRef = useRef<Set<string>>(new Set());
+  const animationRef = useRef<number | null>(null);
 
   const EXPLOSION_DURATION = 500;
   const ANIMATION_STEP = 0.2;
   const MAX_PROGRESS = 150;
-  const isEven = (n) => n % 2 === 0;
+  const isEven = (n: number): boolean => n % 2 === 0;
 
   const columns = ['Array', 'map', 'select', 'take(3)'];
-  const dots = Array(7)
-    .fill()
+  const dots: Dot[] = Array(7)
+    .fill(null)
     .map((_, i) => ({ pos: i, column: 0 }));
 
-  const steps = {
+  const steps: Record<EvaluationType, Step[]> = {
     eager: [
       ...Array(7)
-        .fill()
+        .fill(null)
         .map((_, i) => ({
           pos: i,
           from: 0,
@@ -34,7 +67,7 @@ const ArrayEvaluationDemo = () => {
           narration: `Map to blue: Item ${i}`,
         })),
       ...Array(7)
-        .fill()
+        .fill(null)
         .map((_, i) => ({
           pos: i,
           from: 1,
@@ -136,7 +169,6 @@ const ArrayEvaluationDemo = () => {
         progress: 132,
         narration: 'Done - took 3 items',
       },
-      // Add a final step to trigger graying out of remaining items
       {
         pos: 5,
         from: 0,
@@ -150,25 +182,28 @@ const ArrayEvaluationDemo = () => {
 
   const stepsRef = useRef(steps);
 
-  const easeInOutCubic = (t) => {
+  const easeInOutCubic = (t: number): number => {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   };
 
-  const createExplosion = useCallback((x, y) => {
-    return Array(8)
-      .fill()
-      .map((_, i) => ({
-        id: `${x}-${y}-${i}-${Date.now()}`,
-        x,
-        y,
-        angle: (i * Math.PI * 2) / 8,
-        progress: 0,
-        startTime: Date.now(),
-      }));
-  }, []);
+  const createExplosion = useCallback(
+    (x: number, y: number): ExplosionParticle[] => {
+      return Array(8)
+        .fill(null)
+        .map((_, i) => ({
+          id: `${x}-${y}-${i}-${Date.now()}`,
+          x,
+          y,
+          angle: (i * Math.PI * 2) / 8,
+          progress: 0,
+          startTime: Date.now(),
+        }));
+    },
+    [],
+  );
 
   const cleanup = useCallback(() => {
-    if (animationRef.current) {
+    if (animationRef.current !== null) {
       cancelAnimationFrame(animationRef.current);
     }
   }, []);
@@ -183,22 +218,28 @@ const ArrayEvaluationDemo = () => {
     return 'Ready to start';
   }, [progress, type]);
 
-  const getLatestStepForItem = useCallback((steps, progress, pos) => {
-    const itemSteps = steps.filter((s) => s.pos === pos);
-    for (let i = itemSteps.length - 1; i >= 0; i--) {
-      if (progress >= itemSteps[i].progress) {
-        return itemSteps[i];
+  const getLatestStepForItem = useCallback(
+    (steps: Step[], progress: number, pos: number): Step | null => {
+      const itemSteps = steps.filter((s) => s.pos === pos);
+      for (let i = itemSteps.length - 1; i >= 0; i--) {
+        if (progress >= itemSteps[i].progress) {
+          return itemSteps[i];
+        }
       }
-    }
-    return null;
-  }, []);
+      return null;
+    },
+    [],
+  );
 
-  const getCurrentAnimation = useCallback((steps, progress, pos) => {
-    const itemSteps = steps.filter((s) => s.pos === pos);
-    return itemSteps.find(
-      (s) => progress >= s.progress - 8 && progress <= s.progress,
-    );
-  }, []);
+  const getCurrentAnimation = useCallback(
+    (steps: Step[], progress: number, pos: number): Step | undefined => {
+      const itemSteps = steps.filter((s) => s.pos === pos);
+      return itemSteps.find(
+        (s) => progress >= s.progress - 8 && progress <= s.progress,
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     const updatePositions = () => {
@@ -206,7 +247,6 @@ const ArrayEvaluationDemo = () => {
       let skipRemainingItems = false;
 
       const newPositions = dots.map((dot, i) => {
-        // Check if we should start skipping remaining items
         if (type === 'lazy') {
           const skipStep = currentSteps.find(
             (s) => s.skipRemaining && progress >= s.progress,
@@ -344,7 +384,7 @@ const ArrayEvaluationDemo = () => {
           ))}
 
           {Array(4)
-            .fill()
+            .fill(null)
             .map((_, i) => (
               <line
                 key={i}
@@ -405,7 +445,7 @@ const ArrayEvaluationDemo = () => {
               <span>Eager</span>
               <Switch
                 checked={type === 'lazy'}
-                onCheckedChange={(checked) => {
+                onCheckedChange={(checked: boolean) => {
                   cleanup();
                   setPlaying(false);
                   setProgress(0);
