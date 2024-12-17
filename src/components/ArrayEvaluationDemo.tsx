@@ -76,7 +76,7 @@ const ArrayEvaluationDemo: React.FC = ({
           from: 0,
           to: 1,
           progress: i * 8 + 8,
-          narrationTitle: 'Map to blue',
+          narrationTitle: 'map(&:blue!)',
           narrationDescription: `Item ${i}`,
         })),
       ...Array(7)
@@ -87,7 +87,7 @@ const ArrayEvaluationDemo: React.FC = ({
           to: 2,
           progress: 64 + i * 8,
           explode: !isEven(i),
-          narrationTitle: `Select even?`,
+          narrationTitle: `select(&:even?)`,
           narrationDescription: `Item ${i}: ${isEven(i) ? 'yes' : 'no'}`,
         })),
       ...[0, 2, 4].map((i, idx) => ({
@@ -95,7 +95,7 @@ const ArrayEvaluationDemo: React.FC = ({
         from: 2,
         to: 3,
         progress: 128 + idx * 8,
-        narrationTitle: `Take 3`,
+        narrationTitle: `take(3)`,
         narrationDescription: `Item ${i}`,
       })),
       {
