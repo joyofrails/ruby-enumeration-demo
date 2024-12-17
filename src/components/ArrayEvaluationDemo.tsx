@@ -25,7 +25,6 @@ interface Step {
   narrationDescription: string;
   explode?: boolean;
   skipRemaining?: boolean;
-  untaken?: boolean;
 }
 
 interface ExplosionParticle {
@@ -58,10 +57,8 @@ const ArrayEvaluationDemo: React.FC = ({
   const animationRef = useRef<number | null>(null);
 
   const EXPLOSION_DURATION = 500;
-  // const ANIMATION_STEP = 0.2;
-  const ANIMATION_STEP = 0.15; // Reduced from 0.2 to slow down animation
-  const FRAME_DURATION = 16; // roughly 60fps
-
+  const ANIMATION_STEP = 0.15;
+  const FRAME_DURATION = 16;
   const MAX_PROGRESS = 150;
   const isEven = (n: number): boolean => n % 2 === 0;
 
@@ -106,9 +103,9 @@ const ArrayEvaluationDemo: React.FC = ({
         from: 2,
         to: 2,
         progress: 144,
-        untaken: true,
+        skipRemaining: true,
         narrationTitle: 'Done!',
-        narrationDescription: '3 items taken',
+        narrationDescription: 'Remaining items not taken',
       },
     ],
     lazy: [
@@ -328,7 +325,12 @@ const ArrayEvaluationDemo: React.FC = ({
       let skipRemainingItems = false;
 
       const newPositions = dots.map((dot, i) => {
-        if (type === 'lazy') {
+        if (type === 'eager') {
+          const lastStep = currentSteps[currentSteps.length - 1];
+          if (lastStep.skipRemaining && progress >= lastStep.progress) {
+            skipRemainingItems = isEven(i) && ![0, 2, 4].includes(i);
+          }
+        } else if (type === 'lazy') {
           const skipStep = currentSteps.find(
             (s) => s.skipRemaining && progress >= s.progress,
           );
@@ -424,7 +426,6 @@ const ArrayEvaluationDemo: React.FC = ({
         const deltaTime = currentTime - lastTime;
 
         if (deltaTime >= FRAME_DURATION) {
-          // Only update if enough time has passed
           setProgress((prev) => {
             const next = Math.min(prev + ANIMATION_STEP, MAX_PROGRESS);
             if (next >= MAX_PROGRESS) {
