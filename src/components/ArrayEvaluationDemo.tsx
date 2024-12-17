@@ -21,7 +21,8 @@ interface Step {
   from: number;
   to: number;
   progress: number;
-  narration: string;
+  narrationTitle: string;
+  narrationDescription: string;
   explode?: boolean;
   skipRemaining?: boolean;
   untaken?: boolean;
@@ -36,21 +37,35 @@ interface ExplosionParticle {
   startTime: number;
 }
 
-const ArrayEvaluationDemo: React.FC = () => {
+interface Narration {
+  title: string;
+  description: string;
+}
+
+type ArrayEvaluationDemoProps = {
+  demoType?: EvaluationType | undefined;
+};
+
+const ArrayEvaluationDemo: React.FC = ({
+  demoType,
+}: ArrayEvaluationDemoProps) => {
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [type, setType] = useState<EvaluationType>('eager');
+  const [type, setType] = useState<EvaluationType>(demoType || 'eager');
   const [explosions, setExplosions] = useState<ExplosionParticle[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const processedStepsRef = useRef<Set<string>>(new Set());
   const animationRef = useRef<number | null>(null);
 
   const EXPLOSION_DURATION = 500;
-  const ANIMATION_STEP = 0.2;
+  // const ANIMATION_STEP = 0.2;
+  const ANIMATION_STEP = 0.15; // Reduced from 0.2 to slow down animation
+  const FRAME_DURATION = 16; // roughly 60fps
+
   const MAX_PROGRESS = 150;
   const isEven = (n: number): boolean => n % 2 === 0;
 
-  const columns = ['Array', 'map', 'select', 'take(3)'];
+  const columns = ['[ ]', 'map', 'select', 'take'];
   const dots: Dot[] = Array(7)
     .fill(null)
     .map((_, i) => ({ pos: i, column: 0 }));
@@ -64,7 +79,8 @@ const ArrayEvaluationDemo: React.FC = () => {
           from: 0,
           to: 1,
           progress: i * 8 + 8,
-          narration: `Map to blue: Item ${i}`,
+          narrationTitle: 'Map to blue',
+          narrationDescription: `Item ${i}`,
         })),
       ...Array(7)
         .fill(null)
@@ -74,14 +90,16 @@ const ArrayEvaluationDemo: React.FC = () => {
           to: 2,
           progress: 64 + i * 8,
           explode: !isEven(i),
-          narration: `Select even? Item ${i}: ${isEven(i) ? 'yes' : 'no'}`,
+          narrationTitle: `Select even?`,
+          narrationDescription: `Item ${i}: ${isEven(i) ? 'yes' : 'no'}`,
         })),
       ...[0, 2, 4].map((i, idx) => ({
         pos: i,
         from: 2,
         to: 3,
         progress: 128 + idx * 8,
-        narration: `Take ${idx + 1}: Item ${i}`,
+        narrationTitle: `Take 3`,
+        narrationDescription: `Item ${i}`,
       })),
       {
         pos: 6,
@@ -89,25 +107,42 @@ const ArrayEvaluationDemo: React.FC = () => {
         to: 2,
         progress: 144,
         untaken: true,
-        narration: 'Done - took 3 items',
+        narrationTitle: 'Done!',
+        narrationDescription: '3 items taken',
       },
     ],
     lazy: [
-      { pos: 0, from: 0, to: 1, progress: 8, narration: 'Map to blue: Item 0' },
+      {
+        pos: 0,
+        from: 0,
+        to: 1,
+        progress: 8,
+        narrationTitle: 'Map to blue',
+        narrationDescription: 'Item 0',
+      },
       {
         pos: 0,
         from: 1,
         to: 2,
         progress: 16,
-        narration: 'Select even? Item 0: yes',
+        narrationTitle: 'Select even?',
+        narrationDescription: 'Item 0: yes',
       },
-      { pos: 0, from: 2, to: 3, progress: 24, narration: 'Take 1: Item 0' },
+      {
+        pos: 0,
+        from: 2,
+        to: 3,
+        progress: 24,
+        narrationTitle: 'Take 1',
+        narrationDescription: 'Item 0',
+      },
       {
         pos: 1,
         from: 0,
         to: 1,
         progress: 32,
-        narration: 'Map to blue: Item 1',
+        narrationTitle: 'Map to blue',
+        narrationDescription: 'Item 1',
       },
       {
         pos: 1,
@@ -115,29 +150,40 @@ const ArrayEvaluationDemo: React.FC = () => {
         to: 2,
         progress: 40,
         explode: true,
-        narration: 'Select even? Item 1: no',
+        narrationTitle: 'Select even?',
+        narrationDescription: 'Item 1: no',
       },
       {
         pos: 2,
         from: 0,
         to: 1,
         progress: 56,
-        narration: 'Map to blue: Item 2',
+        narrationTitle: 'Map to blue',
+        narrationDescription: 'Item 2',
       },
       {
         pos: 2,
         from: 1,
         to: 2,
         progress: 64,
-        narration: 'Select even? Item 2: yes',
+        narrationTitle: 'Select even?',
+        narrationDescription: 'Item 2: yes',
       },
-      { pos: 2, from: 2, to: 3, progress: 72, narration: 'Take 2: Item 2' },
+      {
+        pos: 2,
+        from: 2,
+        to: 3,
+        progress: 72,
+        narrationTitle: 'Take 3',
+        narrationDescription: 'Item 2',
+      },
       {
         pos: 3,
         from: 0,
         to: 1,
         progress: 84,
-        narration: 'Map to blue: Item 3',
+        narrationTitle: 'Map to blue',
+        narrationDescription: 'Item 3',
       },
       {
         pos: 3,
@@ -145,29 +191,40 @@ const ArrayEvaluationDemo: React.FC = () => {
         to: 2,
         progress: 92,
         explode: true,
-        narration: 'Select even? Item 3: no',
+        narrationTitle: 'Select even?',
+        narrationDescription: 'Item 3: no',
       },
       {
         pos: 4,
         from: 0,
         to: 1,
         progress: 108,
-        narration: 'Map to blue: Item 4',
+        narrationTitle: 'Map to blue',
+        narrationDescription: 'Item 4',
       },
       {
         pos: 4,
         from: 1,
         to: 2,
         progress: 116,
-        narration: 'Select even? Item 4: yes',
+        narrationTitle: 'Select even?',
+        narrationDescription: 'Item 4: yes',
       },
-      { pos: 4, from: 2, to: 3, progress: 124, narration: 'Take 3: Item 4' },
+      {
+        pos: 4,
+        from: 2,
+        to: 3,
+        progress: 124,
+        narrationTitle: 'Take 3',
+        narrationDescription: 'Item 4',
+      },
       {
         pos: 4,
         from: 3,
         to: 3,
         progress: 132,
-        narration: 'Done - took 3 items',
+        narrationTitle: 'Done!',
+        narrationDescription: '3 items taken',
       },
       {
         pos: 5,
@@ -175,7 +232,8 @@ const ArrayEvaluationDemo: React.FC = () => {
         to: 0,
         progress: 140,
         skipRemaining: true,
-        narration: 'Remaining items skipped',
+        narrationTitle: 'Done!',
+        narrationDescription: 'Remaining items skipped',
       },
     ],
   };
@@ -208,14 +266,37 @@ const ArrayEvaluationDemo: React.FC = () => {
     }
   }, []);
 
-  const getNarration = useCallback(() => {
+  const getNarration = useCallback((): Narration => {
     const currentSteps = stepsRef.current[type];
+
+    // Find any currently animating step
+    const animatingStep = currentSteps.find((step) => {
+      const stepStart = step.progress - 8;
+      const stepEnd = step.progress;
+      return progress >= stepStart && progress <= stepEnd;
+    });
+
+    if (animatingStep) {
+      return {
+        title: animatingStep.narrationTitle,
+        description: animatingStep.narrationDescription,
+      };
+    }
+
+    // If no step is currently animating, find the last completed step
     for (let i = currentSteps.length - 1; i >= 0; i--) {
-      if (progress >= currentSteps[i].progress) {
-        return currentSteps[i].narration;
+      if (progress > currentSteps[i].progress) {
+        return {
+          title: currentSteps[i].narrationTitle,
+          description: currentSteps[i].narrationDescription,
+        };
       }
     }
-    return 'Ready to start';
+
+    return {
+      title: 'Ready to start',
+      description: 'Press play to start the animation',
+    };
   }, [progress, type]);
 
   const getLatestStepForItem = useCallback(
@@ -282,7 +363,7 @@ const ArrayEvaluationDemo: React.FC = () => {
           }
         } else if (latestStep) {
           column = latestStep.to;
-          exploded = latestStep.explode;
+          exploded = latestStep.explode || false;
         }
 
         return {
@@ -291,7 +372,7 @@ const ArrayEvaluationDemo: React.FC = () => {
           transformed: column >= 1,
           exploded,
           skipped: skipRemainingItems || (latestStep?.skipRemaining && i !== 4),
-        };
+        } as Position;
       });
 
       setPositions(newPositions);
@@ -337,21 +418,35 @@ const ArrayEvaluationDemo: React.FC = () => {
   useEffect(() => {
     cleanup();
     if (playing) {
-      const animate = () => {
-        setProgress((prev) => {
-          const next = Math.min(prev + ANIMATION_STEP, MAX_PROGRESS);
-          if (next >= MAX_PROGRESS) {
-            setPlaying(false);
+      let lastTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const deltaTime = currentTime - lastTime;
+
+        if (deltaTime >= FRAME_DURATION) {
+          // Only update if enough time has passed
+          setProgress((prev) => {
+            const next = Math.min(prev + ANIMATION_STEP, MAX_PROGRESS);
+            if (next >= MAX_PROGRESS) {
+              setPlaying(false);
+              return next;
+            }
             return next;
-          }
+          });
+          lastTime = currentTime;
+        }
+
+        if (playing) {
           animationRef.current = requestAnimationFrame(animate);
-          return next;
-        });
+        }
       };
+
       animationRef.current = requestAnimationFrame(animate);
     }
     return cleanup;
   }, [playing, cleanup]);
+
+  const narration = getNarration();
 
   return (
     <Card className='w-full max-w-2xl'>
@@ -366,10 +461,12 @@ const ArrayEvaluationDemo: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='h-12 mb-4 flex items-center justify-center text-lg font-medium'>
-          {getNarration()}
+        <div className='h-12 mb-4 text-lg font-medium text-center'>
+          {narration.title}
+          <div className='text-sm text-gray-500 font-normal'>
+            {narration.description}
+          </div>
         </div>
-
         <svg viewBox='0 0 400 400' className='w-full h-80 mb-4'>
           {columns.map((col, i) => (
             <text
@@ -440,23 +537,25 @@ const ArrayEvaluationDemo: React.FC = () => {
         </svg>
 
         <div className='space-y-4'>
-          <div className='flex items-center justify-between mb-4'>
-            <div className='flex items-center gap-2'>
-              <span>Eager</span>
-              <Switch
-                checked={type === 'lazy'}
-                onCheckedChange={(checked: boolean) => {
-                  cleanup();
-                  setPlaying(false);
-                  setProgress(0);
-                  setType(checked ? 'lazy' : 'eager');
-                  setExplosions([]);
-                  processedStepsRef.current.clear();
-                }}
-              />
-              <span>Lazy</span>
+          {demoType || (
+            <div className='flex items-center justify-between mb-4'>
+              <div className='flex items-center gap-2'>
+                <span>Eager</span>
+                <Switch
+                  checked={type === 'lazy'}
+                  onCheckedChange={(checked: boolean) => {
+                    cleanup();
+                    setPlaying(false);
+                    setProgress(0);
+                    setType(checked ? 'lazy' : 'eager');
+                    setExplosions([]);
+                    processedStepsRef.current.clear();
+                  }}
+                />
+                <span>Lazy</span>
+              </div>
             </div>
-          </div>
+          )}
 
           <Slider
             value={[progress]}
