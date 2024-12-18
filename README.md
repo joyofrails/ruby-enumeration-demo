@@ -2,7 +2,9 @@
 
 A visualization of eager and lazy enumeration in Ruby.
 
-![Screenshot of demo](./docs/screenshot.jpg 'A screenshot of the demo')
+[![Screenshot of demo](./docs/screenshot.jpg 'A screenshot of the demo')](https://joyofrails.github.io/ruby-enumeration-demo/)
+
+https://joyofrails.github.io/ruby-enumeration-demo/
 
 ## About
 
