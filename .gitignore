@@ -1,3 +1,4 @@
 tsconfig.tsbuildinfo
 src/**/*.d.ts
 /dist
+/tmp
