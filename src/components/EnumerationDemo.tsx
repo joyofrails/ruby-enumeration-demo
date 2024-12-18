@@ -3,7 +3,7 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-type EvaluationType = 'eager' | 'lazy';
+export type EnumerationType = 'eager' | 'lazy';
 
 interface Dot {
   pos: number;
@@ -41,23 +41,21 @@ interface Narration {
   description: string;
 }
 
-type ArrayEvaluationDemoProps = {
-  demoType?: EvaluationType | undefined;
-};
+interface EnumerationDemoProps extends React.HTMLAttributes<HTMLDivElement> {
+  demoType?: EnumerationType | undefined | null;
+}
 
-const ArrayEvaluationDemo: React.FC = ({
-  demoType,
-}: ArrayEvaluationDemoProps) => {
+const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [type, setType] = useState<EvaluationType>(demoType || 'eager');
+  const [type, setType] = useState<EnumerationType>(demoType || 'eager');
   const [explosions, setExplosions] = useState<ExplosionParticle[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const processedStepsRef = useRef<Set<string>>(new Set());
   const animationRef = useRef<number | null>(null);
 
   const EXPLOSION_DURATION = 500;
-  const ANIMATION_STEP = 0.15;
+  const ANIMATION_STEP = 0.18;
   const FRAME_DURATION = 16;
   const MAX_PROGRESS = 150;
   const isEven = (n: number): boolean => n % 2 === 0;
@@ -67,7 +65,7 @@ const ArrayEvaluationDemo: React.FC = ({
     .fill(null)
     .map((_, i) => ({ pos: i, column: 0 }));
 
-  const steps: Record<EvaluationType, Step[]> = {
+  const steps: Record<EnumerationType, Step[]> = {
     eager: [
       ...Array(7)
         .fill(null)
@@ -453,7 +451,7 @@ const ArrayEvaluationDemo: React.FC = ({
     <Card className='w-full max-w-2xl'>
       <CardHeader>
         <CardTitle className='flex items-baseline gap-2'>
-          <span>{type === 'eager' ? 'Eager' : 'Lazy'} Evaluation</span>
+          <span>{type === 'eager' ? 'Eager' : 'Lazy'} Enumeration</span>
           <span className='text-sm text-gray-500 font-normal'>
             {type === 'eager'
               ? 'Processes all items through each step before moving to next step'
@@ -538,7 +536,9 @@ const ArrayEvaluationDemo: React.FC = ({
         </svg>
 
         <div className='space-y-4'>
-          {demoType || (
+          {demoType ? (
+            ''
+          ) : (
             <div className='flex items-center justify-between mb-4'>
               <div className='flex items-center gap-2'>
                 <span>Eager</span>
@@ -558,25 +558,30 @@ const ArrayEvaluationDemo: React.FC = ({
             </div>
           )}
 
-          <Slider
-            value={[progress]}
-            onValueChange={([value]) => {
-              setPlaying(false);
-              setProgress(value);
-            }}
-            max={MAX_PROGRESS}
-            step={ANIMATION_STEP}
-            className='w-full'
-          />
+          {demoType ? (
+            ''
+          ) : (
+            <Slider
+              value={[progress]}
+              onValueChange={([value]) => {
+                setPlaying(false);
+                setProgress(value);
+              }}
+              max={MAX_PROGRESS}
+              step={ANIMATION_STEP}
+              className='w-full'
+            />
+          )}
 
           <div className='flex gap-2'>
-            <button
-              onClick={() => setPlaying((prev) => !prev)}
-              className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-            >
-              {playing ? 'Pause' : 'Play'}
-            </button>
-
+            {progress < MAX_PROGRESS && (
+              <button
+                onClick={() => setPlaying((prev) => !prev)}
+                className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+              >
+                {playing ? 'Pause' : 'Play'}
+              </button>
+            )}
             <button
               onClick={() => {
                 cleanup();
@@ -596,4 +601,4 @@ const ArrayEvaluationDemo: React.FC = ({
   );
 };
 
-export default ArrayEvaluationDemo;
+export default EnumerationDemo;
