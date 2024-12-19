@@ -5,6 +5,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export type EnumerationType = 'eager' | 'lazy';
 
+export type ThemeColors = {
+  background?: string;
+  text?: string;
+  primary?: string;
+  secondary?: string;
+  accent?: string;
+  gridLines?: string;
+};
+
 interface Dot {
   pos: number;
   column: number;
@@ -42,15 +51,45 @@ interface Narration {
 }
 
 interface EnumerationDemoProps extends React.HTMLAttributes<HTMLDivElement> {
-  demoType?: EnumerationType | undefined | null;
+  demoType?: EnumerationType;
+  isDarkMode?: boolean;
+  customColors?: ThemeColors;
 }
 
-const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
+const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
+  demoType,
+  isDarkMode = false,
+  customColors = {},
+  className,
+  ...props
+}) => {
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [type, setType] = useState<EnumerationType>(demoType || 'eager');
   const [explosions, setExplosions] = useState<ExplosionParticle[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
+
+  // Theme configuration
+  const theme = {
+    background:
+      customColors.background || (isDarkMode ? 'rgb(24, 24, 27)' : 'white'),
+    text:
+      customColors.text ||
+      (isDarkMode ? 'rgb(250, 250, 250)' : 'rgb(24, 24, 27)'),
+    primary:
+      customColors.primary ||
+      (isDarkMode ? 'rgb(59, 130, 246)' : 'rgb(59, 130, 246)'),
+    secondary:
+      customColors.secondary ||
+      (isDarkMode ? 'rgb(244, 114, 182)' : 'rgb(249, 115, 22)'),
+    accent:
+      customColors.accent ||
+      (isDarkMode ? 'rgb(168, 85, 247)' : 'rgb(168, 85, 247)'),
+    gridLines:
+      customColors.gridLines ||
+      (isDarkMode ? 'rgb(63, 63, 70)' : 'rgb(229, 231, 235)'),
+  };
+
   const processedStepsRef = useRef<Set<string>>(new Set());
   const animationRef = useRef<number | null>(null);
 
@@ -448,21 +487,41 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
   const narration = getNarration();
 
   return (
-    <Card className='w-full max-w-2xl'>
+    <Card
+      className={`w-full max-w-2xl ${isDarkMode ? 'dark' : ''} ${
+        className || ''
+      }`}
+      style={{
+        backgroundColor: theme.background,
+        color: theme.text,
+      }}
+      {...props}
+    >
       <CardHeader>
         <CardTitle className='flex items-baseline gap-2'>
-          <span>{type === 'eager' ? 'Eager' : 'Lazy'} Enumeration</span>
-          <span className='text-sm text-gray-500 font-normal'>
+          <span style={{ color: theme.text }}>
+            {type === 'eager' ? 'Eager' : 'Lazy'} Enumeration
+          </span>
+          <span
+            className='text-sm font-normal'
+            style={{ color: `${theme.text}88` }}
+          >
             {type === 'eager'
               ? 'Processes all items through each step before moving to next step'
-              : 'Processes each needed item through all steps before moving to next item'}
+              : 'Processes each needed item through steps before moving to next item'}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className='h-12 mb-4 text-lg font-medium text-center'>
+        <div
+          className='h-12 mb-4 text-lg font-medium text-center'
+          style={{ color: theme.text }}
+        >
           {narration.title}
-          <div className='text-sm text-gray-500 font-normal'>
+          <div
+            className='text-sm font-normal'
+            style={{ color: `${theme.text}88` }}
+          >
             {narration.description}
           </div>
         </div>
@@ -472,6 +531,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
               key={i}
               x={50 + i * 100}
               y={30}
+              style={{ fill: theme.text }}
               className='text-sm font-medium'
               textAnchor='middle'
             >
@@ -488,7 +548,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
                 y1={40}
                 x2={100 + i * 100}
                 y2={360}
-                stroke='#ddd'
+                stroke={theme.gridLines}
                 strokeDasharray='4,4'
               />
             ))}
@@ -501,16 +561,14 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
                   cx={50 + dot.column * 100}
                   cy={80 + i * 40}
                   r={8}
-                  className={`
-                ${
-                  dot.skipped
-                    ? 'fill-gray-300'
-                    : dot.transformed
-                    ? 'fill-blue-500'
-                    : 'fill-orange-500'
-                }
-                transition-colors duration-500
-              `}
+                  fill={
+                    dot.skipped
+                      ? theme.gridLines
+                      : dot.transformed
+                      ? theme.primary
+                      : theme.secondary
+                  }
+                  className='transition-colors duration-500'
                 />
               ),
           )}
@@ -528,7 +586,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
                 cx={x}
                 cy={y}
                 r={radius}
-                fill='red'
+                fill={theme.accent}
                 opacity={opacity}
               />
             );
@@ -536,11 +594,12 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
         </svg>
 
         <div className='space-y-4'>
-          {demoType ? (
-            ''
-          ) : (
+          {!demoType && (
             <div className='flex items-center justify-between mb-4'>
-              <div className='flex items-center gap-2'>
+              <div
+                className='flex items-center gap-2'
+                style={{ color: theme.text }}
+              >
                 <span>Eager</span>
                 <Switch
                   checked={type === 'lazy'}
@@ -558,9 +617,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
             </div>
           )}
 
-          {demoType ? (
-            ''
-          ) : (
+          {!demoType && (
             <Slider
               value={[progress]}
               onValueChange={([value]) => {
@@ -577,7 +634,8 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
             {progress < MAX_PROGRESS && (
               <button
                 onClick={() => setPlaying((prev) => !prev)}
-                className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+                className='px-4 py-2 rounded hover:opacity-90 transition-opacity'
+                style={{ backgroundColor: theme.primary, color: 'white' }}
               >
                 {playing ? 'Pause' : 'Play'}
               </button>
@@ -590,7 +648,8 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({ demoType }) => {
                 setExplosions([]);
                 processedStepsRef.current.clear();
               }}
-              className='px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300'
+              className='px-4 py-2 rounded hover:opacity-90 transition-opacity'
+              style={{ backgroundColor: theme.gridLines, color: theme.text }}
             >
               Reset
             </button>
