@@ -24,12 +24,17 @@ function App() {
 
   const isDarkMode = queryParams.get('isDarkMode') === 'true';
 
+  const animationSpeed = queryParams.get('animationSpeed')
+    ? parseFloat(queryParams.get('animationSpeed')!)
+    : undefined;
+
   return (
     <div className='min-h-screen flex items-center justify-center p-4'>
       <EnumerationDemo
         demoType={demoType}
         customColors={customColors}
         isDarkMode={isDarkMode}
+        animationSpeed={animationSpeed}
       />
     </div>
   );

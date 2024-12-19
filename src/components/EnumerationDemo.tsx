@@ -54,12 +54,14 @@ interface EnumerationDemoProps extends React.HTMLAttributes<HTMLDivElement> {
   demoType?: EnumerationType;
   isDarkMode?: boolean;
   customColors?: ThemeColors;
+  animationSpeed?: number;
 }
 
 const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
   demoType,
   isDarkMode = false,
   customColors = {},
+  animationSpeed = 0.18,
   className,
   ...props
 }) => {
@@ -94,7 +96,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
   const animationRef = useRef<number | null>(null);
 
   const EXPLOSION_DURATION = 500;
-  const ANIMATION_STEP = 0.18;
+  const ANIMATION_STEP = animationSpeed;
   const FRAME_DURATION = 16;
   const MAX_PROGRESS = 150;
   const isEven = (n: number): boolean => n % 2 === 0;
