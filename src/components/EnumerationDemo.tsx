@@ -61,7 +61,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
   demoType,
   isDarkMode = false,
   customColors = {},
-  animationSpeed = 0.18,
+  animationSpeed = 0.33,
   className,
   ...props
 }) => {
