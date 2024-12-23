@@ -28,6 +28,12 @@ function App() {
     ? parseFloat(queryParams.get('animationSpeed')!)
     : undefined;
 
+  const body = document.querySelector('body');
+  if (body) {
+    body.classList.add(isDarkMode ? 'dark' : 'light');
+    body.style.backgroundColor = customColors.background || '';
+  }
+
   return (
     <div className='min-h-screen flex items-center justify-center p-4'>
       <EnumerationDemo
