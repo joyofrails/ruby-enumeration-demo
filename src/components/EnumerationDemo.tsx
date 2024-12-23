@@ -515,19 +515,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div
-          className='h-12 mb-4 text-lg font-medium text-center'
-          style={{ color: theme.text }}
-        >
-          {narration.title}
-          <div
-            className='text-sm font-normal'
-            style={{ color: `${theme.text}88` }}
-          >
-            {narration.description}
-          </div>
-        </div>
-        <svg viewBox='0 0 400 400' className='w-full h-80 mb-4'>
+        <svg viewBox='0 0 400 400' className='w-full h-33 mb-4'>
           {columns.map((col, i) => (
             <text
               key={i}
@@ -541,14 +529,14 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
             </text>
           ))}
 
-          {Array(4)
+          {Array(5)
             .fill(null)
             .map((_, i) => (
               <line
                 key={i}
-                x1={100 + i * 100}
+                x1={i * 100}
                 y1={40}
-                x2={100 + i * 100}
+                x2={i * 100}
                 y2={360}
                 stroke={theme.gridLines}
                 strokeDasharray='4,4'
@@ -594,7 +582,18 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
             );
           })}
         </svg>
-
+        <div
+          className='h-12 mb-4 text-lg font-medium text-center'
+          style={{ color: theme.text }}
+        >
+          {narration.title}
+          <div
+            className='text-sm font-normal'
+            style={{ color: `${theme.text}88` }}
+          >
+            {narration.description}
+          </div>
+        </div>
         <div className='space-y-4'>
           {!demoType && (
             <div className='flex items-center justify-between mb-4'>
