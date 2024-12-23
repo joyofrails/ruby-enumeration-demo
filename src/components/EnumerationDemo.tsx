@@ -108,6 +108,14 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
 
   const steps: Record<EnumerationType, Step[]> = {
     eager: [
+      {
+        pos: 0,
+        from: 0,
+        to: 0,
+        progress: 0,
+        narrationTitle: 'Start',
+        narrationDescription: 'Press Play to begin',
+      },
       ...Array(7)
         .fill(null)
         .map((_, i) => ({
@@ -115,7 +123,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
           from: 0,
           to: 1,
           progress: i * 8 + 8,
-          narrationTitle: 'map(&:blue!)',
+          narrationTitle: 'map: change color',
           narrationDescription: `Item ${i}`,
         })),
       ...Array(7)
@@ -126,7 +134,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
           to: 2,
           progress: 64 + i * 8,
           explode: !isEven(i),
-          narrationTitle: `select(&:even?)`,
+          narrationTitle: `select: even index?`,
           narrationDescription: `Item ${i}: ${isEven(i) ? 'yes' : 'no'}`,
         })),
       ...[0, 2, 4].map((i, idx) => ({
@@ -134,7 +142,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 2,
         to: 3,
         progress: 128 + idx * 8,
-        narrationTitle: `take(3)`,
+        narrationTitle: `take: 3`,
         narrationDescription: `Item ${i}`,
       })),
       {
@@ -143,17 +151,34 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         to: 2,
         progress: 144,
         skipRemaining: true,
-        narrationTitle: 'Done!',
-        narrationDescription: 'Remaining items not taken',
+        narrationTitle: 'take: 3, done!',
+        narrationDescription: '3 items taken',
+      },
+      {
+        pos: 6,
+        from: 2,
+        to: 2,
+        progress: 144,
+        skipRemaining: true,
+        narrationTitle: 'take: 3, done!',
+        narrationDescription: '3 items taken, remaining items not taken',
       },
     ],
     lazy: [
       {
         pos: 0,
         from: 0,
+        to: 0,
+        progress: 0,
+        narrationTitle: 'Start',
+        narrationDescription: 'Press Play to begin',
+      },
+      {
+        pos: 0,
+        from: 0,
         to: 1,
         progress: 8,
-        narrationTitle: 'Map to blue',
+        narrationTitle: 'map: change color',
         narrationDescription: 'Item 0',
       },
       {
@@ -161,7 +186,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 1,
         to: 2,
         progress: 16,
-        narrationTitle: 'Select even?',
+        narrationTitle: 'select: even index?',
         narrationDescription: 'Item 0: yes',
       },
       {
@@ -169,7 +194,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 2,
         to: 3,
         progress: 24,
-        narrationTitle: 'Take 1',
+        narrationTitle: 'take: 3',
         narrationDescription: 'Item 0',
       },
       {
@@ -177,7 +202,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 0,
         to: 1,
         progress: 32,
-        narrationTitle: 'Map to blue',
+        narrationTitle: 'map: change color',
         narrationDescription: 'Item 1',
       },
       {
@@ -186,7 +211,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         to: 2,
         progress: 40,
         explode: true,
-        narrationTitle: 'Select even?',
+        narrationTitle: 'select: even index?',
         narrationDescription: 'Item 1: no',
       },
       {
@@ -194,7 +219,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 0,
         to: 1,
         progress: 56,
-        narrationTitle: 'Map to blue',
+        narrationTitle: 'map: change color',
         narrationDescription: 'Item 2',
       },
       {
@@ -202,7 +227,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 1,
         to: 2,
         progress: 64,
-        narrationTitle: 'Select even?',
+        narrationTitle: 'select: even index?',
         narrationDescription: 'Item 2: yes',
       },
       {
@@ -210,7 +235,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 2,
         to: 3,
         progress: 72,
-        narrationTitle: 'Take 3',
+        narrationTitle: 'take: 3',
         narrationDescription: 'Item 2',
       },
       {
@@ -218,7 +243,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 0,
         to: 1,
         progress: 84,
-        narrationTitle: 'Map to blue',
+        narrationTitle: 'map: change color',
         narrationDescription: 'Item 3',
       },
       {
@@ -227,7 +252,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         to: 2,
         progress: 92,
         explode: true,
-        narrationTitle: 'Select even?',
+        narrationTitle: 'select: even index?',
         narrationDescription: 'Item 3: no',
       },
       {
@@ -235,7 +260,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 0,
         to: 1,
         progress: 108,
-        narrationTitle: 'Map to blue',
+        narrationTitle: 'map: change color',
         narrationDescription: 'Item 4',
       },
       {
@@ -243,7 +268,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 1,
         to: 2,
         progress: 116,
-        narrationTitle: 'Select even?',
+        narrationTitle: 'select: even index?',
         narrationDescription: 'Item 4: yes',
       },
       {
@@ -251,7 +276,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 2,
         to: 3,
         progress: 124,
-        narrationTitle: 'Take 3',
+        narrationTitle: 'take: 3',
         narrationDescription: 'Item 4',
       },
       {
@@ -259,7 +284,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         from: 3,
         to: 3,
         progress: 132,
-        narrationTitle: 'Done!',
+        narrationTitle: 'take 3, done!',
         narrationDescription: '3 items taken',
       },
       {
@@ -268,8 +293,8 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         to: 0,
         progress: 140,
         skipRemaining: true,
-        narrationTitle: 'Done!',
-        narrationDescription: 'Remaining items skipped',
+        narrationTitle: 'take: 3, done!',
+        narrationDescription: '3 items taken, remaining items skipped',
       },
     ],
   };
