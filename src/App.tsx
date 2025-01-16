@@ -34,8 +34,13 @@ function App() {
     body.style.backgroundColor = customColors.background || '';
   }
 
+  let classes = ['min-h-screen'];
+  if (queryParams.get('centered') !== 'false') {
+    classes = classes.concat(['flex', 'justify-center', 'items-center', 'p-4']);
+  }
+
   return (
-    <div className='min-h-screen flex items-center justify-center p-4'>
+    <div className={classes.join(' ')}>
       <EnumerationDemo
         demoType={demoType}
         customColors={customColors}
