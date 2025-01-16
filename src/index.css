@@ -120,10 +120,6 @@
 }
 
 /* Add responsive utilities */
-.h-33 {
-  height: 33rem;
-}
-
 .w-full {
   width: 100%;
 }

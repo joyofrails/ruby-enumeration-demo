@@ -540,7 +540,7 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <svg viewBox='0 0 400 400' className='w-full h-33 mb-4'>
+        <svg viewBox='0 0 400 400' className='w-full mb-4'>
           {columns.map((col, i) => (
             <text
               key={i}
