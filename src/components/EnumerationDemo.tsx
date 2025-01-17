@@ -540,7 +540,11 @@ const EnumerationDemo: React.FC<EnumerationDemoProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <svg viewBox='0 0 400 400' className='w-full mb-4'>
+        <svg
+          viewBox='0 0 400 400'
+          className='w-full mb-4'
+          style={{ maxHeight: '60vh' }}
+        >
           {columns.map((col, i) => (
             <text
               key={i}
